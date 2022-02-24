@@ -1,4 +1,7 @@
 const graphql = require("graphql");
+const { Review } = require("../models/Review");
+const { Story } = require("../models/Story");
+const { User } = require("../models/User");
 
 const {
   GraphQLObjectType,
@@ -48,7 +51,6 @@ const StoryType = new GraphQLObjectType({
     user: {
       type: UserType,
       resolve(parent, args) {
-        console.log("parent", parent);
         return {
           username: "pamu",
         };
@@ -169,24 +171,55 @@ const RootQuery = new GraphQLObjectType({
   },
 });
 
-// const Mutation = new GraphQLObjectType({
-//   name: "Mutation",
-//   fields: {
-//     addAuthor: {
-//       type: AuthorType,
-//       args: {
-//         id: { type: new GraphQLNonNull(GraphQLID) },
-//         name: { type: new GraphQLNonNull(GraphQLString) },
-//         age: { type: GraphQLInt },
-//       },
-//       resolve(parent, args) {
-//         authors.push(args);
-//         return authors[authors.length - 1];
-//       },
-//     },
-//   },
-// });
+const Mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    addUser: {
+      type: UserType,
+      args: {
+        username: { type: new GraphQLNonNull(GraphQLString) },
+        age: { type: GraphQLInt },
+        country: { type: GraphQLString },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      async resolve(parent, args) {
+        const user = new User(args);
+        const saved = await user.save();
+        return saved;
+      },
+    },
+    addStory: {
+      type: StoryType,
+      args: {
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        details: { type: GraphQLString },
+        location: { type: new GraphQLNonNull(GraphQLString) },
+        image: { type: new GraphQLNonNull(GraphQLString) },
+        user: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      async resolve(parent, args) {
+        const story = new Story(args);
+        const saved = await story.save();
+        return saved;
+      },
+    },
+    addReview: {
+      type: ReviewType,
+      args: {
+        score: { type: new GraphQLNonNull(GraphQLInt) },
+        user: { type: new GraphQLNonNull(GraphQLID) },
+        story: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      async resolve(parent, args) {
+        const review = new Review(args);
+        const saved = await review.save();
+        return saved;
+      },
+    },
+  },
+});
 module.exports = new GraphQLSchema({
   query: RootQuery,
-  // , mutation: Mutation
+  mutation: Mutation,
 });

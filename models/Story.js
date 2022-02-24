@@ -6,10 +6,10 @@ const Story = mongoose.model(
     title: {
       type: String,
       required: true,
+      unique: true,
     },
     details: {
       type: String,
-      required: true,
     },
     location: {
       type: String,
@@ -21,6 +21,7 @@ const Story = mongoose.model(
     },
     image: {
       type: String,
+      required: true,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

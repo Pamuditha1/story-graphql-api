@@ -20,6 +20,7 @@ const User = mongoose.model(
     email: {
       type: String,
       require: true,
+      unique: true,
     },
   })
 );
