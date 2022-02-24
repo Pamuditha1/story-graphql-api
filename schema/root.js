@@ -25,14 +25,18 @@ const UserType = new GraphQLObjectType({
     password: { type: GraphQLString },
     stories: {
       type: new GraphQLList(StoryType),
-      resolve(parent, args) {
-        return [{ title: "Story 1" }, { title: "Story 2" }];
+      async resolve(parent, args) {
+        const stories = await Story.find({ user: parent.id }).populate("user");
+        return stories;
       },
     },
     reviews: {
       type: new GraphQLList(ReviewType),
-      resolve(parent, args) {
-        return [{ score: 5 }, { score: 2 }];
+      async resolve(parent, args) {
+        const reviews = await Review.find({ user: parent.id })
+          .populate("user")
+          .populate("story");
+        return reviews;
       },
     },
   }),
@@ -48,18 +52,14 @@ const StoryType = new GraphQLObjectType({
     timeStamp: { type: GraphQLString },
     image: { type: GraphQLString },
     visible: { type: GraphQLBoolean },
-    user: {
-      type: UserType,
-      resolve(parent, args) {
-        return {
-          username: "pamu",
-        };
-      },
-    },
+    user: { type: UserType },
     reviews: {
       type: new GraphQLList(ReviewType),
-      resolve(parent, args) {
-        return [{ score: 5 }, { score: 4 }];
+      async resolve(parent, args) {
+        const reviews = await Review.find({ story: parent.id })
+          .populate("user")
+          .populate("story");
+        return reviews;
       },
     },
   }),
@@ -71,22 +71,8 @@ const ReviewType = new GraphQLObjectType({
     id: { type: GraphQLID },
     score: { type: GraphQLInt },
     timeStamp: { type: GraphQLString },
-    user: {
-      type: UserType,
-      resolve(parent, args) {
-        return {
-          username: "pamu",
-        };
-      },
-    },
-    story: {
-      type: StoryType,
-      resolve(parent, args) {
-        return {
-          title: "Story",
-        };
-      },
-    },
+    user: { type: UserType },
+    story: { type: StoryType },
   }),
 });
 
@@ -96,76 +82,48 @@ const RootQuery = new GraphQLObjectType({
     user: {
       type: UserType,
       args: { id: { type: GraphQLID } },
-      resolve(parent, args) {
-        return {
-          id: args.id,
-          username: "Pamuditha",
-        };
+      async resolve(parent, args) {
+        const user = await User.findById(args.id);
+        return user;
       },
     },
     users: {
       type: new GraphQLList(UserType),
-      resolve(parent, args) {
-        return [
-          {
-            id: 1,
-            username: "Pamuditha",
-          },
-          {
-            id: 2,
-            username: "Pamu",
-          },
-        ];
+      async resolve(parent, args) {
+        const users = await User.find();
+        return users;
       },
     },
     story: {
       type: StoryType,
       args: { id: { type: GraphQLID } },
-      resolve(parent, args) {
-        return {
-          id: args.id,
-          title: "Story",
-        };
+      async resolve(parent, args) {
+        const story = await Story.findById(args.id).populate("user");
+        return story;
       },
     },
     stories: {
       type: new GraphQLList(UserType),
-      resolve(parent, args) {
-        return [
-          {
-            id: 2,
-            title: "Story 1",
-          },
-          {
-            id: 3,
-            title: "Story 2",
-          },
-        ];
+      async resolve(parent, args) {
+        const stories = await Story.find().populate("user");
+        return stories;
       },
     },
     review: {
       type: ReviewType,
       args: { id: { type: GraphQLID } },
-      resolve(parent, args) {
-        return {
-          id: args.id,
-          score: 5,
-        };
+      async resolve(parent, args) {
+        const review = await Review.findById(args.id)
+          .populate("user")
+          .populate("story");
+        return review;
       },
     },
     reviews: {
-      type: new GraphQLList(UserType),
-      resolve(parent, args) {
-        return [
-          {
-            id: 1,
-            score: 5,
-          },
-          {
-            id: 2,
-            score: 5,
-          },
-        ];
+      type: new GraphQLList(ReviewType),
+      async resolve(parent, args) {
+        const reviews = await Review.find().populate("user").populate("story");
+        return reviews;
       },
     },
   },
@@ -219,6 +177,7 @@ const Mutation = new GraphQLObjectType({
     },
   },
 });
+
 module.exports = new GraphQLSchema({
   query: RootQuery,
   mutation: Mutation,
