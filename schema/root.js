@@ -20,6 +20,18 @@ const UserType = new GraphQLObjectType({
     country: { type: GraphQLString },
     email: { type: GraphQLString },
     password: { type: GraphQLString },
+    stories: {
+      type: new GraphQLList(StoryType),
+      resolve(parent, args) {
+        return [{ title: "Story 1" }, { title: "Story 2" }];
+      },
+    },
+    reviews: {
+      type: new GraphQLList(ReviewType),
+      resolve(parent, args) {
+        return [{ score: 5 }, { score: 2 }];
+      },
+    },
   }),
 });
 
@@ -33,6 +45,21 @@ const StoryType = new GraphQLObjectType({
     timeStamp: { type: GraphQLString },
     image: { type: GraphQLString },
     visible: { type: GraphQLBoolean },
+    user: {
+      type: UserType,
+      resolve(parent, args) {
+        console.log("parent", parent);
+        return {
+          username: "pamu",
+        };
+      },
+    },
+    reviews: {
+      type: new GraphQLList(ReviewType),
+      resolve(parent, args) {
+        return [{ score: 5 }, { score: 4 }];
+      },
+    },
   }),
 });
 
@@ -42,8 +69,22 @@ const ReviewType = new GraphQLObjectType({
     id: { type: GraphQLID },
     score: { type: GraphQLInt },
     timeStamp: { type: GraphQLString },
-    // user: { type: GraphQLString },
-    // story: { type: GraphQLString }
+    user: {
+      type: UserType,
+      resolve(parent, args) {
+        return {
+          username: "pamu",
+        };
+      },
+    },
+    story: {
+      type: StoryType,
+      resolve(parent, args) {
+        return {
+          title: "Story",
+        };
+      },
+    },
   }),
 });
 
@@ -60,14 +101,44 @@ const RootQuery = new GraphQLObjectType({
         };
       },
     },
+    users: {
+      type: new GraphQLList(UserType),
+      resolve(parent, args) {
+        return [
+          {
+            id: 1,
+            username: "Pamuditha",
+          },
+          {
+            id: 2,
+            username: "Pamu",
+          },
+        ];
+      },
+    },
     story: {
       type: StoryType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         return {
           id: args.id,
-          name: "Story",
+          title: "Story",
         };
+      },
+    },
+    stories: {
+      type: new GraphQLList(UserType),
+      resolve(parent, args) {
+        return [
+          {
+            id: 2,
+            title: "Story 1",
+          },
+          {
+            id: 3,
+            title: "Story 2",
+          },
+        ];
       },
     },
     review: {
@@ -78,6 +149,21 @@ const RootQuery = new GraphQLObjectType({
           id: args.id,
           score: 5,
         };
+      },
+    },
+    reviews: {
+      type: new GraphQLList(UserType),
+      resolve(parent, args) {
+        return [
+          {
+            id: 1,
+            score: 5,
+          },
+          {
+            id: 2,
+            score: 5,
+          },
+        ];
       },
     },
   },
