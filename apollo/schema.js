@@ -15,6 +15,8 @@ exports.typeDefs = gql`
     addUser(input: AddUserInput): User
     addStory(input: AddStoryInput): Story
     addReview(input: AddReviewInput): Review
+    hideStory(id: ID!): String
+    deleteReview(id: ID!): String
   }
 
   type User {

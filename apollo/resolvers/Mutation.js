@@ -21,4 +21,16 @@ exports.Mutation = {
     const saved = await review.save();
     return saved;
   },
+  hideStory: async (parent, args) => {
+    const { id } = args;
+    const story = await Story.findById(id);
+    story.visible = false;
+    await story.save();
+    return `Story ${story.title} Updated`;
+  },
+  deleteReview: async (parent, args) => {
+    const { id } = args;
+    const result = await Review.findByIdAndRemove(id);
+    return `Review ${id} Removed`;
+  },
 };
