@@ -16,6 +16,7 @@ exports.typeDefs = gql`
     addStory(input: AddStoryInput): Story
     addReview(input: AddReviewInput): Review
     hideStory(id: ID!): String
+    updateStory(id: ID!, input: UpdateStoryInput): Story
     deleteReview(id: ID!): String
   }
 
@@ -74,5 +75,12 @@ exports.typeDefs = gql`
     score: Int!
     user: ID!
     story: ID!
+  }
+
+  input UpdateStoryInput {
+    title: String!
+    details: String
+    location: String
+    image: String!
   }
 `;

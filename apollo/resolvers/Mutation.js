@@ -28,6 +28,16 @@ exports.Mutation = {
     await story.save();
     return `Story ${story.title} Updated`;
   },
+  updateStory: async (parent, args) => {
+    const { id, input } = args;
+    let story = await Story.findById(id);
+    story.title = input.title;
+    story.details = input.details;
+    story.image = input.image;
+    story.location = input.location;
+    const saved = await story.save();
+    return saved;
+  },
   deleteReview: async (parent, args) => {
     const { id } = args;
     const result = await Review.findByIdAndRemove(id);
