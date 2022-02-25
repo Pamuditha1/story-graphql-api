@@ -11,6 +11,12 @@ exports.typeDefs = gql`
     reviews: [Review]
   }
 
+  type Mutation {
+    addUser(input: AddUserInput): User
+    addStory(input: AddStoryInput): Story
+    addReview(input: AddReviewInput): Review
+  }
+
   type User {
     id: ID!
     username: String!
@@ -44,5 +50,27 @@ exports.typeDefs = gql`
 
   input StoriesFilterInput {
     visible: Boolean
+  }
+
+  input AddUserInput {
+    username: String!
+    age: Int
+    country: String
+    password: String!
+    email: String!
+  }
+
+  input AddStoryInput {
+    title: String!
+    details: String
+    location: String
+    image: String!
+    user: ID!
+  }
+
+  input AddReviewInput {
+    score: Int!
+    user: ID!
+    story: ID!
   }
 `;
