@@ -26,6 +26,7 @@ const Story = mongoose.model(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
     visible: {
       type: Boolean,

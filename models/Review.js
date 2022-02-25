@@ -15,10 +15,12 @@ const Review = mongoose.model(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
     story: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Story",
+      required: true,
     },
   })
 );
