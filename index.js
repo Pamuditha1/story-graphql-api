@@ -1,6 +1,6 @@
 // apollo-server
 
-const { ApolloServer, gql } = require("apollo-server");
+const { ApolloServer } = require("apollo-server");
 const mongoose = require("mongoose");
 //const { MongoClient } = require("mongodb");
 require("dotenv").config();
@@ -38,8 +38,17 @@ const resolvers = {
 };
 
 const server = new ApolloServer({
+  // cors: false,
   typeDefs,
   resolvers,
+  // introspection: true,
+  // cors: {
+  //   origin: "*",
+  //   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  //   preflightContinue: false,
+  //   optionsSuccessStatus: 204,
+  //   credentials: true,
+  // },
   // dataSources: () => ({
   //   users: new Users(UserModel.User),
   // }),
